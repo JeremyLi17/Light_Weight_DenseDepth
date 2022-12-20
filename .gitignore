@@ -1,8 +1,9 @@
-/__pycache__
+__pycache__
 /models
 /*.h5
 /*.zip
 /.vscode
 *.jpg
+*.png
 *.obj
 .DS_Store
