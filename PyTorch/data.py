@@ -4,6 +4,8 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 from PIL import Image
+from PIL import ImageFilter
+from PIL import ImageEnhance
 from io import BytesIO
 import random
 
@@ -12,6 +14,27 @@ def _is_pil_image(img):
 
 def _is_numpy_image(img):
     return isinstance(img, np.ndarray) and (img.ndim in {2, 3})
+
+class CustomRandomProcess(object):##
+    def __call__(self, sample):
+        image, depth = sample['image'], sample['depth']
+
+        if not _is_pil_image(image):
+            raise TypeError(
+                'img should be PIL Image. Got {}'.format(type(image)))
+        if not _is_pil_image(depth):
+            raise TypeError(
+                'img should be PIL Image. Got {}'.format(type(depth)))
+
+        if random.random() < 0.1:
+            image_en = ImageEnhance.Color(image)
+            image = image_en.enhance(1.5)
+        if random.random() < 0.2:
+            image = image.filter(ImageFilter.SHARPEN)
+        if random.random() < 0.3:
+            image = image.filter(ImageFilter.EDGE_ENHANCE)
+
+        return {'image': image, 'depth': depth}
 
 class RandomHorizontalFlip(object):
     def __call__(self, sample):
@@ -140,6 +163,7 @@ def getDefaultTrainTransform():
     return transforms.Compose([
         RandomHorizontalFlip(),
         RandomChannelSwap(0.5),
+        CustomRandomProcess(),
         ToTensor()
     ])
 

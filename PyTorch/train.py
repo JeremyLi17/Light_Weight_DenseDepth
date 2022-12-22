@@ -31,8 +31,13 @@ def main():
     args = parser.parse_args()
 
     # Create model
-    model = PTModel().cuda()
-    print('Model created.')
+    # model = PTModel().cuda()
+    # print('Model created.')
+
+
+    # Load model
+    model = torch.load('./model-epoch9-raw.pth').cuda()
+    print('Model Loaded.')
 
     # Training parameters
     optimizer = torch.optim.Adam(model.parameters(), args.lr)
@@ -53,7 +58,8 @@ def main():
     print(summary(model))
 
     # Start training...
-    for epoch in range(args.epochs):
+    start = 10
+    for epoch in range(start, args.epochs):
         batch_time = AverageMeter()
         losses = AverageMeter()
         N = len(train_loader)
